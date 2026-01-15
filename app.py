@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import os
 import argparse
 import base64
 import copy
 import csv
 import itertools
+import os
+import sys
+import threading
 from collections import Counter, deque
 from io import BytesIO
 
@@ -30,16 +32,26 @@ history_length = 16
 point_history = deque(maxlen=history_length)
 finger_gesture_history = deque(maxlen=history_length)
 
+# Thread safety lock for TensorFlow Lite interpreter
+inference_lock = threading.Lock()
+
+
+def setup():
+    """Initialize models for production deployment (Gunicorn-safe)."""
+    print("Initializing models...")
+    initialize_models()
+    print("Models loaded successfully!")
+
 
 def initialize_models():
     """Initialize MediaPipe hands and classifiers (called once at startup)"""
     global hands, keypoint_classifier, point_history_classifier
     global keypoint_classifier_labels, point_history_classifier_labels
-    
+
     # Model load
     mp_hands = mp.solutions.hands
     hands = mp_hands.Hands(
-        static_image_mode=True,
+        static_image_mode=False,
         max_num_hands=2,
         min_detection_confidence=0.7,
         min_tracking_confidence=0.5,
@@ -62,6 +74,10 @@ def initialize_models():
         point_history_classifier_labels = [
             row[0] for row in point_history_classifier_labels
         ]
+
+
+# Initialize models at module level (runs when imported by Gunicorn)
+setup()
 
 
 def predict_hand_sign(image):
@@ -102,14 +118,16 @@ def predict_hand_sign(image):
         
         # Hand sign classification (USING EXISTING MODEL LOGIC)
         # Get prediction with confidence
-        input_details_tensor_index = keypoint_classifier.input_details[0]['index']
-        keypoint_classifier.interpreter.set_tensor(
-            input_details_tensor_index,
-            np.array([pre_processed_landmark_list], dtype=np.float32))
-        keypoint_classifier.interpreter.invoke()
+        with inference_lock:
+            input_details_tensor_index = keypoint_classifier.input_details[0]['index']
+            keypoint_classifier.interpreter.set_tensor(
+                input_details_tensor_index,
+                np.array([pre_processed_landmark_list], dtype=np.float32))
+            keypoint_classifier.interpreter.invoke()
+            
+            output_details_tensor_index = keypoint_classifier.output_details[0]['index']
+            hand_sign_result = keypoint_classifier.interpreter.get_tensor(output_details_tensor_index)
         
-        output_details_tensor_index = keypoint_classifier.output_details[0]['index']
-        hand_sign_result = keypoint_classifier.interpreter.get_tensor(output_details_tensor_index)
         hand_sign_probs = np.squeeze(hand_sign_result)
         hand_sign_id = np.argmax(hand_sign_probs)
         hand_sign_confidence = float(hand_sign_probs[hand_sign_id])
@@ -761,17 +779,13 @@ def predict():
 # ============================================================================
 
 if __name__ == '__main__':
-    import sys
-    
     # Check if running as Flask app (no command line args) or original script
     if len(sys.argv) == 1:
-        # Initialize models for Flask
-        print("Initializing models...")
-        initialize_models()
-        print("Models loaded successfully!")
+        # Flask server mode - models already initialized at module level
         port = int(os.environ.get("PORT", 5000))
         print(f"Starting Flask server on port {port}")
         app.run(host="0.0.0.0", port=port)
     else:
-        # Run original command-line version
+        # Run original command-line version with camera GUI
+        # Note: main() will reinitialize models for the GUI
         main()
