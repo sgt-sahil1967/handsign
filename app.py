@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import os
 import argparse
 import base64
 import copy
@@ -768,8 +769,9 @@ if __name__ == '__main__':
         print("Initializing models...")
         initialize_models()
         print("Models loaded successfully!")
-        print("Starting Flask server at http://localhost:5000")
-        app.run(debug=True, host='0.0.0.0', port=5000)
+        port = int(os.environ.get("PORT", 5000))
+        print(f"Starting Flask server on port {port}")
+        app.run(host="0.0.0.0", port=port)
     else:
         # Run original command-line version
         main()
