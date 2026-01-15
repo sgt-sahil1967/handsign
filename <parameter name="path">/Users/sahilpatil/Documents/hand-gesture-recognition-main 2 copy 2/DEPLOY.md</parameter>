@@ -1,0 +1,98 @@
+<parameter name="content"># Deploy to Render (Free)
+
+## Step 1: Push Code to GitHub (Done ✓)
+Your code is now at: https://github.com/sgt-sahil1967/handsign
+
+## Step 2: Create Render Account
+1. Go to https://render.com
+2. Click "Get Started" → Sign up with GitHub
+
+## Step 3: Create Web Service
+1. In Render dashboard, click "New +" → "Web Service"
+2. Connect your GitHub repository: `sgt-sahil1967/handsign`
+3. Configure the service:
+   - **Name**: hand-gesture-recognition
+   - **Branch**: main
+   - **Runtime**: Python 3.11
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `gunicorn app:app`
+4. Click "Create Web Service"
+
+## Step 4: Add Environment Variables (Important!)
+In your Render service settings, add:
+- **Key**: `FLASK_APP`
+- **Value**: `app.py`
+- **Key**: `PORT`
+- **Value**: `5000`
+
+## Step 5: Deploy
+- Render will automatically build and deploy
+- Watch the build logs for errors
+- Once done, you'll get a URL like: `https://hand-gesture-recognition.onrender.com`
+
+## Step 6: Test Your App
+Visit your Render URL and test:
+1. Login page should load
+2. Navigate through pages
+3. Try the detect page (note: webcam requires HTTPS/camera permissions)
+
+---
+
+## Important Notes
+
+### Webcam on Deployed Apps
+- **Browser webcam** works if user grants permission
+- Server cannot access user's webcam directly
+- The JavaScript in browser captures frames and sends to server
+
+### Model Files
+- Your `.hdf5`, `.keras`, and `.tflite` model files are included
+- They will be uploaded to Render automatically
+
+### Cold Starts
+- Free tier: app sleeps after 15 min of inactivity
+- First request after sleep takes ~30 seconds to wake up
+
+---
+
+## Troubleshooting
+
+### Build Fails - Memory Error
+Reduce requirements.txt:
+```txt
+flask>=2.0.0
+tensorflow-cpu>=2.15.0
+mediapipe>=0.10.0
+opencv-python>=4.8.0
+numpy>=1.24.0
+gunicorn>=21.0.0
+```
+
+### Import Errors
+Check that all packages install correctly in build logs.
+
+### Model Not Loading
+Ensure model paths are relative (they are already in your code).
+
+---
+
+## Alternative: Deploy to Railway
+1. Go to https://railway.app
+2. "Deploy from GitHub repo"
+3. Set start command: `gunicorn app:app`
+4. Add `PORT` environment variable = `5000`
+
+## Alternative: Deploy to Hugging Face Spaces
+1. Go to https://huggingface.co/spaces
+2. Create new Space → Gradio or Docker
+3. Use this repository
+4. Set runtime to Python
+
+---
+
+## Verify Deployment
+```bash
+# Test your deployed URL
+curl https://your-app.onrender.com
+```
+</parameter>
