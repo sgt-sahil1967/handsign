@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help & FAQ - Hand Sign Recognition</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar">
+            <a href="/dashboard" class="navbar-brand">🤲 Hand Sign Recognition</a>
+            <ul class="navbar-nav">
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/detect">Detection</a></li>
+                <li><a href="/how-it-works">How It Works</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/help">Help</a></li>
+            </ul>
+        </nav>
+
+        <div class="info-page">
+            <h1>Help & Frequently Asked Questions</h1>
+            
+            <h2>Getting Started</h2>
+            
+            <h3>How do I start using the application?</h3>
+            <ol>
+                <li>Navigate to the <a href="/detect">Detection</a> page</li>
+                <li>Click the "Start Webcam" button</li>
+                <li>Allow camera permissions when prompted by your browser</li>
+                <li>Show your hand to the camera</li>
+                <li>View the predictions in real-time</li>
+            </ol>
+
+            <h3>What browsers are supported?</h3>
+            <p>The application works best with modern browsers that support:</p>
+            <ul>
+                <li>Chrome 60+ (Recommended)</li>
+                <li>Firefox 55+</li>
+                <li>Safari 11+</li>
+                <li>Edge 79+</li>
+            </ul>
+            <p><strong>Note:</strong> Internet Explorer is not supported.</p>
+
+            <h2>Camera Issues</h2>
+
+            <h3>The webcam won't start. What should I do?</h3>
+            <ul>
+                <li><strong>Check permissions</strong>: Make sure you've allowed camera access in your browser settings</li>
+                <li><strong>Close other apps</strong>: Other applications (Zoom, Teams, etc.) might be using the camera</li>
+                <li><strong>Check browser console</strong>: Press F12 and look for error messages</li>
+                <li><strong>Try a different browser</strong>: Some browsers handle permissions differently</li>
+                <li><strong>Restart browser</strong>: Sometimes a simple restart fixes permission issues</li>
+            </ul>
+
+            <h3>I see "Permission denied" error</h3>
+            <p>To fix camera permissions:</p>
+            <ul>
+                <li><strong>Chrome/Edge</strong>: Click the lock icon in the address bar → Camera → Allow</li>
+                <li><strong>Firefox</strong>: Click the shield icon → Permissions → Camera → Allow</li>
+                <li><strong>Safari</strong>: Safari → Preferences → Websites → Camera → Allow</li>
+            </ul>
+
+            <h3>Camera is blurry or not detecting my hand</h3>
+            <ul>
+                <li>Ensure good lighting - avoid backlighting</li>
+                <li>Keep your hand at a comfortable distance (30-60cm from camera)</li>
+                <li>Make sure your entire hand is visible in the frame</li>
+                <li>Avoid cluttered backgrounds</li>
+                <li>Clean your camera lens</li>
+            </ul>
+
+            <h2>Detection Issues</h2>
+
+            <h3>No predictions are showing</h3>
+            <ul>
+                <li>Make sure your hand is clearly visible in the camera frame</li>
+                <li>Try different hand positions and angles</li>
+                <li>Ensure adequate lighting</li>
+                <li>Wait a few seconds - predictions update every 500ms</li>
+                <li>Check the browser console (F12) for errors</li>
+            </ul>
+
+            <h3>Predictions are inaccurate</h3>
+            <ul>
+                <li>Make sure you're showing one of the supported hand signs clearly</li>
+                <li>Keep your hand steady for better recognition</li>
+                <li>Ensure your hand is fully in the frame</li>
+                <li>Try adjusting the distance from the camera</li>
+                <li>Check that lighting is adequate</li>
+            </ul>
+
+            <h3>What hand signs are supported?</h3>
+            <p>The application recognizes 8 hand signs:</p>
+            <ul>
+                <li>Open (open palm)</li>
+                <li>Close (closed fist)</li>
+                <li>Pointer (pointing with index finger)</li>
+                <li>OK (thumb and index finger forming a circle)</li>
+                <li>ASL A (fist with thumb on side)</li>
+                <li>ASL B (flat hand, fingers together)</li>
+                <li>ASL C (curved hand, like letter C)</li>
+                <li>ASL D (index finger pointing up, other fingers closed)</li>
+            </ul>
+
+            <h2>Technical Issues</h2>
+
+            <h3>The page won't load</h3>
+            <ul>
+                <li>Make sure the Flask server is running (<code>python app.py</code>)</li>
+                <li>Check that you're accessing <code>http://localhost:5000</code></li>
+                <li>Check the terminal for error messages</li>
+                <li>Try refreshing the page (Ctrl+R or Cmd+R)</li>
+            </ul>
+
+            <h3>I see "Connection refused" error</h3>
+            <p>The Flask server is not running. Start it with:</p>
+            <pre><code>cd "/path/to/project"
+source venv311/bin/activate
+python app.py</code></pre>
+
+            <h3>Predictions are slow</h3>
+            <ul>
+                <li>This is normal - predictions are processed every 500ms</li>
+                <li>Processing happens on the server, which adds network latency</li>
+                <li>For faster predictions, ensure good internet connection (if applicable)</li>
+                <li>Close other applications to free up system resources</li>
+            </ul>
+
+            <h2>Privacy & Security</h2>
+
+            <h3>Is my video data stored or sent anywhere?</h3>
+            <p><strong>No.</strong> All processing happens locally:</p>
+            <ul>
+                <li>Video is captured in your browser</li>
+                <li>Frames are sent to your local Flask server</li>
+                <li>No data is sent to external servers</li>
+                <li>No video is stored or saved</li>
+            </ul>
+
+            <h3>Can I use this offline?</h3>
+            <p>Yes, once the server is running, you can use the application offline. However, you need:</p>
+            <ul>
+                <li>The Flask server running locally</li>
+                <li>All model files present in the project directory</li>
+                <li>No external dependencies required</li>
+            </ul>
+
+            <h2>Performance</h2>
+
+            <h3>What are the system requirements?</h3>
+            <ul>
+                <li><strong>CPU</strong>: Any modern processor</li>
+                <li><strong>RAM</strong>: 2GB minimum, 4GB recommended</li>
+                <li><strong>Camera</strong>: Any webcam or built-in camera</li>
+                <li><strong>Browser</strong>: Modern browser with WebRTC support</li>
+            </ul>
+
+            <h3>Why is my computer slow when using this?</h3>
+            <ul>
+                <li>Machine learning inference is computationally intensive</li>
+                <li>Close other applications to free up resources</li>
+                <li>Ensure your computer meets the minimum requirements</li>
+                <li>Consider using a more powerful device if available</li>
+            </ul>
+
+            <h2>Still Need Help?</h2>
+            <p>
+                If you're still experiencing issues:
+            </p>
+            <ul>
+                <li>Check the browser console (F12) for error messages</li>
+                <li>Check the Flask server terminal for backend errors</li>
+                <li>Review the <a href="/how-it-works">How It Works</a> page for technical details</li>
+                <li>Ensure all dependencies are properly installed</li>
+            </ul>
+
+            <div style="text-align: center; margin-top: 2rem;">
+                <a href="/detect" class="btn-primary">Try Detection</a>
+                <a href="/how-it-works" class="btn-link" style="margin-left: 1rem;">Technical Details</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+
+

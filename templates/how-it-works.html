@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How It Works - Hand Sign Recognition</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar">
+            <a href="/dashboard" class="navbar-brand">🤲 Hand Sign Recognition</a>
+            <ul class="navbar-nav">
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/detect">Detection</a></li>
+                <li><a href="/how-it-works">How It Works</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/help">Help</a></li>
+            </ul>
+        </nav>
+
+        <div class="info-page">
+            <h1>How It Works</h1>
+            
+            <p>
+                This application uses a sophisticated machine learning pipeline to recognize hand signs in real-time. 
+                Here's a detailed breakdown of the process:
+            </p>
+
+            <h2>1. Video Capture</h2>
+            <p>
+                When you click "Start Webcam", the application requests access to your device's camera using the 
+                <code>getUserMedia</code> API. The video stream is captured and displayed in the browser.
+            </p>
+            <ul>
+                <li>Video resolution: 640x480 pixels</li>
+                <li>Frame rate: 30 FPS (captured)</li>
+                <li>Format: RGB color space</li>
+            </ul>
+
+            <h2>2. Frame Processing</h2>
+            <p>
+                Every 500 milliseconds, a frame is captured from the video stream and sent to the backend server 
+                for processing. The frame is:
+            </p>
+            <ul>
+                <li>Converted to a base64-encoded JPEG image</li>
+                <li>Sent via HTTP POST request to the <code>/predict</code> endpoint</li>
+                <li>Decoded back to a numpy array on the server</li>
+            </ul>
+
+            <h2>3. Hand Detection with MediaPipe</h2>
+            <p>
+                MediaPipe Hands is used to detect and track hands in the video frame:
+            </p>
+            <ul>
+                <li><strong>Detection</strong>: Identifies hand presence in the frame</li>
+                <li><strong>Landmark Extraction</strong>: Extracts 21 key points representing hand structure:
+                    <ul>
+                        <li>Wrist (1 point)</li>
+                        <li>Thumb (4 points)</li>
+                        <li>Index finger (4 points)</li>
+                        <li>Middle finger (4 points)</li>
+                        <li>Ring finger (4 points)</li>
+                        <li>Pinky finger (4 points)</li>
+                    </ul>
+                </li>
+                <li><strong>Handedness</strong>: Determines if the hand is left or right</li>
+            </ul>
+
+            <h2>4. Landmark Preprocessing</h2>
+            <p>
+                The raw landmark coordinates are preprocessed to make them invariant to:
+            </p>
+            <ul>
+                <li><strong>Position</strong>: Converted to relative coordinates (relative to wrist)</li>
+                <li><strong>Scale</strong>: Normalized to unit scale</li>
+                <li><strong>Rotation</strong>: Orientation-independent representation</li>
+            </ul>
+            <p>
+                This preprocessing ensures the model works regardless of hand position, size, or camera angle.
+            </p>
+
+            <h2>5. Hand Sign Classification</h2>
+            <p>
+                The preprocessed landmarks are fed into a TensorFlow Lite model (<code>keypoint_classifier</code>):
+            </p>
+            <ul>
+                <li><strong>Input</strong>: 42 features (21 landmarks × 2 coordinates)</li>
+                <li><strong>Model Type</strong>: Neural network (TensorFlow Lite)</li>
+                <li><strong>Output</strong>: Probability distribution over 8 hand sign classes</li>
+                <li><strong>Prediction</strong>: Class with highest probability is selected</li>
+            </ul>
+
+            <h2>6. Finger Gesture Recognition</h2>
+            <p>
+                For dynamic gestures (like pointing), a second model tracks finger movement history:
+            </p>
+            <ul>
+                <li><strong>Point History</strong>: Tracks the position of the index finger tip over 16 frames</li>
+                <li><strong>Gesture Classification</strong>: Classifies movement patterns:
+                    <ul>
+                        <li>Stop</li>
+                        <li>Clockwise</li>
+                        <li>Counter Clockwise</li>
+                        <li>Move</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h2>7. Result Display</h2>
+            <p>
+                The prediction results are sent back to the browser and displayed:
+            </p>
+            <ul>
+                <li><strong>Hand Sign</strong>: The recognized gesture (e.g., "Open", "ASL A")</li>
+                <li><strong>Confidence</strong>: Model's confidence score (0-100%)</li>
+                <li><strong>Finger Gesture</strong>: Dynamic gesture if applicable</li>
+                <li><strong>Handedness</strong>: Left or Right hand</li>
+            </ul>
+
+            <h2>Technical Architecture</h2>
+            
+            <h3>Frontend (Browser)</h3>
+            <ul>
+                <li>Captures video stream from webcam</li>
+                <li>Captures frames every 500ms</li>
+                <li>Encodes frames as base64 JPEG</li>
+                <li>Sends frames to backend via Fetch API</li>
+                <li>Displays prediction results</li>
+            </ul>
+
+            <h3>Backend (Flask Server)</h3>
+            <ul>
+                <li>Receives image frames via HTTP POST</li>
+                <li>Decodes base64 to numpy array</li>
+                <li>Processes image with MediaPipe</li>
+                <li>Runs TensorFlow Lite inference</li>
+                <li>Returns JSON response with predictions</li>
+            </ul>
+
+            <h3>Machine Learning Models</h3>
+            <ul>
+                <li><strong>MediaPipe Hands</strong>: Pre-trained hand detection model</li>
+                <li><strong>KeyPoint Classifier</strong>: Custom TensorFlow Lite model for hand signs</li>
+                <li><strong>Point History Classifier</strong>: Custom TensorFlow Lite model for finger gestures</li>
+            </ul>
+
+            <h2>Data Flow Diagram</h2>
+            <pre>
+Webcam → Browser → Base64 Image → Flask Server
+                                           ↓
+                                    MediaPipe Hands
+                                           ↓
+                                    Landmark Extraction
+                                           ↓
+                                    Preprocessing
+                                           ↓
+                                    TensorFlow Lite Models
+                                           ↓
+                                    Prediction Results
+                                           ↓
+                                    JSON Response → Browser → Display
+            </pre>
+
+            <h2>Performance Optimizations</h2>
+            <ul>
+                <li><strong>Frame Sampling</strong>: Processes every 500ms instead of every frame (reduces load)</li>
+                <li><strong>TensorFlow Lite</strong>: Lightweight model format for fast inference</li>
+                <li><strong>Static Image Mode</strong>: MediaPipe uses static image mode for better accuracy</li>
+                <li><strong>Model Caching</strong>: Models loaded once at startup, reused for all requests</li>
+            </ul>
+
+            <div style="text-align: center; margin-top: 2rem;">
+                <a href="/detect" class="btn-primary">Try Detection</a>
+                <a href="/about" class="btn-link" style="margin-left: 1rem;">Learn More</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+
+

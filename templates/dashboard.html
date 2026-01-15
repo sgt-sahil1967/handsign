@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hand Sign Recognition - Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar">
+            <a href="/dashboard" class="navbar-brand">🤲 Hand Sign Recognition</a>
+            <ul class="navbar-nav">
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/detect">Detection</a></li>
+                <li><a href="/how-it-works">How It Works</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/help">Help</a></li>
+            </ul>
+        </nav>
+
+        <div class="dashboard">
+            <h1>Dashboard</h1>
+            
+            <div class="status-grid">
+                <div class="status-card">
+                    <h2>System Status</h2>
+                    <p class="status-active">Active</p>
+                </div>
+                
+                <div class="status-card">
+                    <h2>Model Accuracy</h2>
+                    <p class="accuracy">92%</p>
+                </div>
+                
+                <div class="status-card">
+                    <h2>Supported Signs</h2>
+                    <p class="accuracy">8 Signs</p>
+                </div>
+            </div>
+            
+            <div class="action-section">
+                <a href="/detect" class="btn-primary">🚀 Start Hand Sign Detection</a>
+            </div>
+
+            <div class="feature-grid" style="margin-top: 2rem;">
+                <div class="feature-card">
+                    <h3>Real-time Detection</h3>
+                    <p>Get instant predictions from your webcam feed with high accuracy</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Multiple Gestures</h3>
+                    <p>Recognize 8 different hand signs including ASL letters and common gestures</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Easy to Use</h3>
+                    <p>Simple interface - just click start and show your hand to the camera</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

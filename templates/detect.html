@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hand Sign Recognition - Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar">
+            <a href="/dashboard" class="navbar-brand">🤲 Hand Sign Recognition</a>
+            <ul class="navbar-nav">
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/detect">Detection</a></li>
+                <li><a href="/how-it-works">How It Works</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/help">Help</a></li>
+            </ul>
+        </nav>
+
+        <div class="detection-page">
+            <h1>Hand Sign Detection</h1>
+            
+            <div class="detection-layout">
+                <div class="detection-left">
+                    <div class="video-section">
+                        <video id="video" autoplay playsinline muted></video>
+                        <canvas id="canvas" style="display: none;"></canvas>
+                    </div>
+                    
+                    <div class="controls">
+                        <button id="startBtn" class="btn-primary">📹 Start Webcam</button>
+                        <button id="stopBtn" class="btn-secondary" disabled>⏹️ Stop Webcam</button>
+                    </div>
+                </div>
+                
+                <div class="detection-right">
+                    <div class="prediction-panel">
+                        <h2>Prediction Results</h2>
+                        <div id="predictionResults">
+                            <p class="no-prediction">Click "Start Webcam" to begin detection</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="navigation">
+                <a href="/dashboard" class="btn-link">← Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
